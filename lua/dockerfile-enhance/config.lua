@@ -7,6 +7,8 @@ M.default_config = {
     highlight_group = "Comment", -- 高亮组
     auto_enhance = true,       -- 是否自动增强
     enable_highlights = true,  -- 是否启用高亮
+    enable_virtual_text = true, -- 是否启用虚拟文本
+    virtual_highlight_group = "Comment", -- 虚拟文本高亮组
 }
 
 -- 验证配置
@@ -46,6 +48,20 @@ function M.validate_config(config)
         validated.enable_highlights = config.enable_highlights
     else
         validated.enable_highlights = M.default_config.enable_highlights
+    end
+    
+    -- 验证虚拟文本启用
+    if type(config.enable_virtual_text) == "boolean" then
+        validated.enable_virtual_text = config.enable_virtual_text
+    else
+        validated.enable_virtual_text = M.default_config.enable_virtual_text
+    end
+    
+    -- 验证虚拟文本高亮组
+    if type(config.virtual_highlight_group) == "string" and #config.virtual_highlight_group > 0 then
+        validated.virtual_highlight_group = config.virtual_highlight_group
+    else
+        validated.virtual_highlight_group = M.default_config.virtual_highlight_group
     end
     
     return validated

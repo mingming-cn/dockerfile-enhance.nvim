@@ -18,7 +18,7 @@
 
 ```lua
 use {
-    'your-username/dockerfile-enhance.nvim',
+    'mingming-cn/dockerfile-enhance.nvim',
     config = function()
         require('dockerfile-enhance').setup()
     end
@@ -29,7 +29,7 @@ use {
 
 ```lua
 {
-    'your-username/dockerfile-enhance.nvim',
+    'mingming-cn/dockerfile-enhance.nvim',
     config = true,
     event = { "BufReadPost Dockerfile*", "BufReadPost *.dockerfile" }
 }
@@ -38,7 +38,7 @@ use {
 ### 使用 vim-plug
 
 ```vim
-Plug 'your-username/dockerfile-enhance.nvim'
+Plug 'mingming-cn/dockerfile-enhance.nvim'
 ```
 
 ## 配置

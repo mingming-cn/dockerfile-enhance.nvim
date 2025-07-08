@@ -21,61 +21,9 @@ function M.detect_from_instructions(lines)
     return from_lines, from_info
 end
 
--- 生成分隔线
+-- 生成分隔线（用于虚拟文本）
 function M.create_separator(config)
     return string.rep(config.separator_char, config.separator_length)
-end
-
--- 重构Dockerfile内容
-function M.restructure_dockerfile(lines, from_lines, config)
-    local new_lines = {}
-    local last_line = 0
-    
-    for _, line_num in ipairs(from_lines) do
-        -- 添加FROM指令之前的内容
-        for i = last_line + 1, line_num - 1 do
-            table.insert(new_lines, lines[i])
-        end
-        
-        -- 如果不是第一个FROM指令，添加分隔线
-        if last_line > 0 then
-            table.insert(new_lines, "")
-            table.insert(new_lines, M.create_separator(config))
-            table.insert(new_lines, "")
-        end
-        
-        -- 添加FROM指令
-        table.insert(new_lines, lines[line_num])
-        last_line = line_num
-    end
-    
-    -- 添加剩余的代码
-    for i = last_line + 1, #lines do
-        table.insert(new_lines, lines[i])
-    end
-    
-    return new_lines
-end
-
--- 应用高亮
-function M.apply_highlights(bufnr, config)
-    if not config.enable_highlights then
-        return
-    end
-    
-    local ns_id = vim.api.nvim_create_namespace("dockerfile_enhance")
-    
-    -- 清除之前的高亮
-    vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
-    
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local separator = M.create_separator(config)
-    
-    for i, line in ipairs(lines) do
-        if line == separator then
-            vim.api.nvim_buf_add_highlight(bufnr, ns_id, config.highlight_group, i - 1, 0, -1)
-        end
-    end
 end
 
 -- 检查是否为Dockerfile
@@ -99,6 +47,30 @@ function M.get_buffer_config()
     end
     
     return config
+end
+
+-- 检查是否有多个FROM指令
+function M.has_multiple_from_instructions(lines)
+    local from_lines, _ = M.detect_from_instructions(lines)
+    return #from_lines > 1
+end
+
+-- 获取FROM指令之间的行号
+function M.get_from_separator_positions(from_lines)
+    local positions = {}
+    
+    for i = 2, #from_lines do
+        local prev_line = from_lines[i-1]
+        local current_line = from_lines[i]
+        
+        -- 在上一行的末尾位置添加分隔符
+        table.insert(positions, {
+            line = prev_line,
+            col = 0  -- 将在虚拟文本中处理列位置
+        })
+    end
+    
+    return positions
 end
 
 return M 
